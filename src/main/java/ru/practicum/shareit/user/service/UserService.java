@@ -45,5 +45,4 @@ public class UserService {
             throw new ValidationException("Пустой email");
         }
     }
-
 }

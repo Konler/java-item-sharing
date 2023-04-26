@@ -19,13 +19,6 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
-    private void checkOwner(Long ownerId) {
-        User owner = userRepository.getUser(ownerId);
-        if (owner == null) {
-            throw new KeyNotFoundException("Пользователь не найден");
-        }
-    }
-
     public Item getOne(Long itemId) {
         return itemRepository.getItem(itemId);
     }
@@ -67,6 +60,12 @@ public class ItemService {
         if (item.getName() == null || item.getName().isEmpty()) {
             log.warn("Пустое имя");
             throw new ValidationException("Пустое имя");
+        }
+    }
+    private void checkOwner(Long ownerId) {
+        User owner = userRepository.getUser(ownerId);
+        if (owner == null) {
+            throw new KeyNotFoundException("Пользователь не найден");
         }
     }
 
