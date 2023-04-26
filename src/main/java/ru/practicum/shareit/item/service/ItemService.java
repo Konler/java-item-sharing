@@ -62,6 +62,7 @@ public class ItemService {
             throw new ValidationException("Пустое имя");
         }
     }
+
     private void checkOwner(Long ownerId) {
         User owner = userRepository.getUser(ownerId);
         if (owner == null) {
