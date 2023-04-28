@@ -44,10 +44,10 @@ public class ItemRepositoryInMemory implements ItemRepository {
         if (text.isEmpty()) {
             return new ArrayList<>();
         }
-        final String textLC = text.toLowerCase();
+        final String lowerCaseText = text.toLowerCase();
         List<Item> result = itemsMap.values().stream().filter(item -> item.getAvailable()
-                        && (item.getName().toLowerCase().contains(textLC)
-                        || item.getDescription().toLowerCase().contains(textLC)))
+                        && (item.getName().toLowerCase().contains(lowerCaseText)
+                        || item.getDescription().toLowerCase().contains(lowerCaseText)))
                 .collect(Collectors.toList());
         log.info("{}.searchText({})", this.getClass().getName(), text);
         return result;
