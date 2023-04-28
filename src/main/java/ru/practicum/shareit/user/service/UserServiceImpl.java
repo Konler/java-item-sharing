@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class UserServiceImpl  implements UserService{
+public class UserServiceImpl implements UserService{
     private final UserRepository repository;
 
     public User getOne(Long userId) {
