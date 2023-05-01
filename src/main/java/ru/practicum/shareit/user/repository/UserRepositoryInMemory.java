@@ -2,7 +2,7 @@ package ru.practicum.shareit.user.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.exceptions.DublicateException;
+import ru.practicum.shareit.exceptions.DuplicateException;
 import ru.practicum.shareit.exceptions.KeyNotFoundException;
 import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.user.model.User;
@@ -52,7 +52,7 @@ public class UserRepositoryInMemory implements UserRepository {
     public User createUser(User user) {
         for (User userMap : usersMap.values()) {
             if (userMap.getEmail().equals(user.getEmail())) {
-                throw new DublicateException("Адрес электронной почты пользователя уже существует!");
+                throw new DuplicateException("Адрес электронной почты пользователя уже существует!");
             }
         }
         user.setId(generateUserId());
@@ -75,11 +75,9 @@ public class UserRepositoryInMemory implements UserRepository {
                         userInMap.setEmail(user.getEmail());
 
                     } else {
-                        throw new DublicateException("Почта уже используется");
+                        throw new DuplicateException("Почта уже используется");
                     }
                 } else {
-                    // emailsMap.remove(userInMap.getEmail());
-                    //emailsMap.put(userId,user.getEmail());
                     emailsMap.remove(userId);
                     emailsMap.put(userId, userInMap.getEmail());
                     userInMap.setEmail(user.getEmail());
