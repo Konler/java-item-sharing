@@ -1,4 +1,4 @@
-package ru.practicum.shareit.handler;
+package ru.practicum.shareit.exceptions.handlerExceptions;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
