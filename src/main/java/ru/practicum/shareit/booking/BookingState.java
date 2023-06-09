@@ -6,8 +6,7 @@ public enum BookingState {
     PAST("Завершенные"),
     FUTURE("Будущие"),
     WAITING("Ожидающие подтверждения"),
-    REJECTED("Отклоненные"),
-    UNSUPPORTED_STATUS("Неподдерживаемый статус");
+    REJECTED("Отклоненные");
 
     public final String message;
 

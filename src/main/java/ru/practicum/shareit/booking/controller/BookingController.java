@@ -12,9 +12,6 @@ import ru.practicum.shareit.messages.LogMessages;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-bookings.
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoLittle;
-import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exceptions.IllegalAccessException;
@@ -23,7 +23,7 @@ import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.messages.LogMessages;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
+    private final UserServiceImpl userService;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
     public static final Sort SORT_BY_START_ASC = Sort.by("start").ascending();
@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto addItem(Long userId, ItemDto itemDto) {
         Item newItem = ItemMapper.toItem(itemDto);
-        User user = userRepository.validateUser(userId);
+        User user = userService.validateUser(userId);
         newItem.setOwner(user);
         return ItemMapper.toItemDto(itemRepository.save(newItem));
     }
@@ -55,7 +55,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto updateItem(Long itemId, ItemDto itemDto, Long userId) {
         Item item = itemRepository.validateItem(itemId);
-        userRepository.validateUser(userId);
+        userService.validateUser(userId);
         if (!item.getOwner().getId().equals(userId)) {
             log.warn(LogMessages.ILLEGAL_ACCESS.toString());
             throw new IllegalAccessException(LogMessages.ILLEGAL_ACCESS.toString());
@@ -92,7 +92,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByUserId(Long userId) {
-        userRepository.validateUser(userId);
+        userService.validateUser(userId);
         List<Item> items = itemRepository.findAllByOwnerId(userId);
         if (items.isEmpty()) {
             log.warn(LogMessages.NOT_FOUND.toString());
@@ -134,7 +134,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public CommentDto addComment(Long userId, Long itemId, CommentDto commentDto) {
-        User user = userRepository.validateUser(userId);
+        User user = userService.validateUser(userId);
         Item item = itemRepository.validateItem(itemId);
         LocalDateTime now = LocalDateTime.now();
         List<Booking> items = bookingRepository

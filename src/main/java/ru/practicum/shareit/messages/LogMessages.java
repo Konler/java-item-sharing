@@ -35,7 +35,6 @@ public enum LogMessages {
     BOOKING_GET_BY_ID("Пользователь {} не обладает правами для просмотра данных о бронировании"),
     UNSUPPORTED_STATUS("Unknown state: ");
 
-
     private final String messageText;
 
     LogMessages(String messageText) {

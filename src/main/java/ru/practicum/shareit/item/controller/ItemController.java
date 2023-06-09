@@ -11,10 +11,6 @@ import ru.practicum.shareit.messages.LogMessages;
 import javax.validation.Valid;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
-
 @Slf4j
 @RestController
 @RequiredArgsConstructor

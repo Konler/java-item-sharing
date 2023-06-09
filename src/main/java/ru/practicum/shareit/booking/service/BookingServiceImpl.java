@@ -8,18 +8,15 @@ import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingCreatDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exceptions.BookingException;
-import ru.practicum.shareit.exceptions.InvalidIdException;
-import ru.practicum.shareit.exceptions.NotFoundException;
-import ru.practicum.shareit.exceptions.ValidationException;
+import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.messages.LogMessages;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -33,14 +30,14 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
+    private final UserServiceImpl userService;
     private static final Sort SORT = Sort.sort(Booking.class).by(Booking::getStart).descending();
 
     @Override
     @Transactional
     public BookingDto addBooking(BookingCreatDto bookingCreatDto, Long userId) {
         Item item = itemRepository.validateItem(bookingCreatDto.getItemId());
-        User user = userRepository.validateUser(userId);
+        User user = userService.validateUser(userId);
         if (!item.getAvailable()) {
             log.warn(LogMessages.BOOKING_NOT_AVAILABLE.toString(), bookingCreatDto.getItemId());
             throw new ValidationException(LogMessages.BOOKING_NOT_AVAILABLE.toString());
@@ -58,7 +55,7 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingDto updateBooking(Long bookingId, Long userId, Boolean approved) {
         Booking booking = bookingRepository.validateBooking(bookingId);
-        User user = userRepository.validateUser(userId);
+        User user = userService.validateUser(userId);
         Item item = booking.getItem();
         if (!item.getOwner().equals(user)) {
             log.warn(LogMessages.BOOKING_INVALID_ID.toString(), userId);
@@ -79,7 +76,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public BookingDto getBookingById(Long bookingId, Long userId) {
         Booking booking = bookingRepository.validateBooking(bookingId);
-        User user = userRepository.validateUser(userId);
+        User user = userService.validateUser(userId);
         Long bookerId = booking.getBooker().getId();
         Long itemOwnerId = booking.getItem().getOwner().getId();
         if (!(bookerId.equals(user.getId()) || itemOwnerId.equals(user.getId()))) {
@@ -91,7 +88,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getAllUserBookings(Long bookerId, BookingState state) {
-        userRepository.validateUser(bookerId);
+        userService.validateUser(bookerId);
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookingDtoList;
         switch (state) {
@@ -115,7 +112,7 @@ public class BookingServiceImpl implements BookingService {
                 break;
             default:
                 log.warn(LogMessages.UNSUPPORTED_STATUS.toString(), state);
-                throw new BookingException(LogMessages.UNSUPPORTED_STATUS.toString() + state);
+                throw new BookingException("Unknown state: UNSUPPORTED_STATUS");
         }
         return bookingDtoList.stream()
                 .map(BookingMapper::toBookingDto)
@@ -124,7 +121,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getOwnerAllItemBookings(Long userId, BookingState state) {
-        userRepository.validateUser(userId);
+        userService.validateUser(userId);
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookingDtoList;
         switch (state) {
@@ -148,7 +145,7 @@ public class BookingServiceImpl implements BookingService {
                 break;
             default:
                 log.warn(LogMessages.UNSUPPORTED_STATUS.toString(), state);
-                throw new BookingException(LogMessages.UNSUPPORTED_STATUS.toString() + state);
+                throw new BookingException("Unknown state: UNSUPPORTED_STATUS");
         }
         return bookingDtoList.stream()
                 .map(BookingMapper::toBookingDto)

@@ -9,10 +9,11 @@ import javax.persistence.*;
 /**
  * TODO Sprint add-controllers.
  */
-@Getter
-@Setter
+
 @Entity
 @Builder
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "items")
