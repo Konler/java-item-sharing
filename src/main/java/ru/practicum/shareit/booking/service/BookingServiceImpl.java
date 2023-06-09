@@ -11,7 +11,10 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
-import ru.practicum.shareit.exceptions.*;
+import ru.practicum.shareit.exceptions.BookingException;
+import ru.practicum.shareit.exceptions.InvalidIdException;
+import ru.practicum.shareit.exceptions.NotFoundException;
+import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.messages.LogMessages;
@@ -20,6 +23,7 @@ import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -87,11 +91,13 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllUserBookings(Long bookerId, BookingState state) {
+    public List<BookingDto> getAllUserBookings(Long bookerId, String state) {
         userService.validateUser(bookerId);
         LocalDateTime now = LocalDateTime.now();
-        List<Booking> bookingDtoList;
-        switch (state) {
+        BookingState bookingState = toBookingState(state);
+        List<Booking> bookingDtoList = Collections.emptyList();
+        ;
+        switch (bookingState) {
             case ALL:
                 bookingDtoList = bookingRepository.findAllByBookerId(bookerId, SORT);
                 break;
@@ -110,9 +116,6 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED:
                 bookingDtoList = bookingRepository.findByBookerIdAndStatusIs(bookerId, Status.REJECTED, SORT);
                 break;
-            default:
-                log.warn(LogMessages.UNSUPPORTED_STATUS.toString(), state);
-                throw new BookingException("Unknown state: UNSUPPORTED_STATUS");
         }
         return bookingDtoList.stream()
                 .map(BookingMapper::toBookingDto)
@@ -120,11 +123,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getOwnerAllItemBookings(Long userId, BookingState state) {
+    public List<BookingDto> getOwnerAllItemBookings(Long userId, String state) {
         userService.validateUser(userId);
         LocalDateTime now = LocalDateTime.now();
-        List<Booking> bookingDtoList;
-        switch (state) {
+        BookingState bookingState = toBookingState(state);
+        List<Booking> bookingDtoList = Collections.emptyList();
+        switch (bookingState) {
             case ALL:
                 bookingDtoList = bookingRepository.findAllByItemOwnerId(userId, SORT);
                 break;
@@ -143,9 +147,6 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED:
                 bookingDtoList = bookingRepository.findAllByItemOwnerIdAndStatusIs(userId, Status.REJECTED, SORT);
                 break;
-            default:
-                log.warn(LogMessages.UNSUPPORTED_STATUS.toString(), state);
-                throw new BookingException("Unknown state: UNSUPPORTED_STATUS");
         }
         return bookingDtoList.stream()
                 .map(BookingMapper::toBookingDto)
@@ -160,6 +161,14 @@ public class BookingServiceImpl implements BookingService {
         if (bookingCreatDto.getStart().isEqual(bookingCreatDto.getEnd())) {
             log.warn(LogMessages.BOOKING_START_DATE_EQUAL.toString(), bookingCreatDto.getStart());
             throw new BookingException(LogMessages.BOOKING_START_DATE_EQUAL.toString());
+        }
+    }
+
+    private BookingState toBookingState(String state) {
+        try {
+            return BookingState.valueOf(state.toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            throw new BookingException("Unknown state: " + state);
         }
     }
 }

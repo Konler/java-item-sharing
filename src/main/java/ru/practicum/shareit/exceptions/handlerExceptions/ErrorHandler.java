@@ -6,7 +6,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.practicum.shareit.exceptions.IllegalAccessException;
 import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.messages.LogMessages;
@@ -81,21 +80,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleThrowableException(final Throwable e) {
         log.error(LogMessages.INTERNAL_SERVER_ERROR_STATUS.toString(), e.toString());
-        return Map.of("error", "Internal Server Error");
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUnknownBookingState(final MethodArgumentTypeMismatchException e) {
-        log.error(LogMessages.UNSUPPORTED_STATUS.toString(), e.getMessage());
-        return new ErrorResponse("Unknown " + e.getName() + ": " + e.getValue());
-    }
-
-    public static class ErrorResponse {
-        private final String error;
-
-        public ErrorResponse(String error) {
-            this.error = error;
-        }
+        return Map.of("error", e.getMessage());
     }
 }
