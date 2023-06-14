@@ -74,6 +74,7 @@ class BookingControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     public void shouldCreateBooking() throws Exception {
         when(bookingService.addBooking(any(), anyLong())).thenReturn(bookingDto);
@@ -225,6 +226,7 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$[0].end", is(bookingDto.getEnd().format(formatter))))
                 .andExpect(jsonPath("$[0].status", is(bookingDto.getStatus().name())));
     }
+
     @Test
     public void getOwnerAllItemBookings() throws Exception {
         when(bookingService.getOwnerAllItemBookings(anyLong(), any(), anyInt(), anyInt())).thenReturn(List.of(bookingDto));

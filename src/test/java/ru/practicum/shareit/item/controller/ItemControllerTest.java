@@ -49,7 +49,7 @@ class ItemControllerTest {
 
     @Test
     public void shouldCreateItem() throws Exception {
-        when(itemService.addItem(anyLong(),any())).thenReturn(itemDto);
+        when(itemService.addItem(anyLong(), any())).thenReturn(itemDto);
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", 1)
                         .content(objectMapper.writeValueAsString(itemDto))
@@ -64,7 +64,7 @@ class ItemControllerTest {
 
     @Test
     public void shouldNotCreateItemWithEmptyName() throws Exception {
-        when(itemService.addItem(anyLong(),any())).thenThrow(new ValidationException("Имя не может быть пустым"));
+        when(itemService.addItem(anyLong(), any())).thenThrow(new ValidationException("Имя не может быть пустым"));
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", 1)
                         .content(objectMapper.writeValueAsString(itemDto))
@@ -76,7 +76,7 @@ class ItemControllerTest {
 
     @Test
     public void shouldNotCreateItemWithEmptyDescription() throws Exception {
-        when(itemService.addItem(anyLong(),any())).thenThrow(new ValidationException("Описание не может быть пустым"));
+        when(itemService.addItem(anyLong(), any())).thenThrow(new ValidationException("Описание не может быть пустым"));
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", 1)
                         .content(objectMapper.writeValueAsString(itemDto))
@@ -88,7 +88,7 @@ class ItemControllerTest {
 
     @Test
     public void shouldNotCreateItemWithEmptyAvailable() throws Exception {
-        when(itemService.addItem(anyLong(),any())).thenThrow(new ValidationException("Статус доступности вещи отсутствует"));
+        when(itemService.addItem(anyLong(), any())).thenThrow(new ValidationException("Статус доступности вещи отсутствует"));
         mockMvc.perform(post("/items")
                         .header("X-Sharer-User-Id", 1)
                         .content(objectMapper.writeValueAsString(itemDto))
