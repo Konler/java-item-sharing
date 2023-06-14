@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BookingCreatDto {
+
     private Long id;
     @NotNull
     @FutureOrPresent(message = ValidationMessages.START_DATA)
