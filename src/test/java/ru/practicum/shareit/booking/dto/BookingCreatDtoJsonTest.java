@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
-class BookingCreationDtoJsonTest {
+class BookingCreatDtoJsonTest {
     @Autowired
     private JacksonTester<BookingCreatDto> json;
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
