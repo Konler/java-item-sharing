@@ -7,7 +7,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -53,21 +52,6 @@ class UserServiceImplTest {
         assertEquals(userDto.getEmail(), actualNewUser.getEmail());
         verify(userRepository, times(1)).save(any());
     }
-//    @Test
-//    public void updateUserWithCorrectData() {
-//        UserDto userNewDto = UserDto.builder()
-//                .name("NewName")
-//                .email("userNWname@gmail.com")
-//                .build();
-//        User updatedUser = new User("NewName","userNEWname@gmail.com");
-//        UserDto expectedUser = UserMapper.toUserDto(updatedUser);
-//
-//        when(userService.validateUser(anyLong())).thenReturn(user);
-//        when(userRepository.save(any())).thenReturn(updatedUser);
-//        UserDto actualNewUser = userService.updateUser(userNewDto, user.getId());
-//        assertEquals(expectedUser, actualNewUser);
-//        verify(userRepository, times(1)).save(any());
-//    }
 
     @Test
     public void getAllUsers() {
@@ -81,22 +65,4 @@ class UserServiceImplTest {
         assertEquals(1, actualUserList.size());
         assertEquals(expectedUserList, actualUserList);
     }
-//    @Test
-//    public void getUserById() {
-//        UserDto expectedUser = UserMapper.toUserDto(user);
-//
-//        when(userService.validateUser(anyLong())).thenReturn(user);
-//        UserDto actualUser = userService.getUserById(1L);
-//        assertNotNull(actualUser);
-//        assertEquals(expectedUser.getId(), actualUser.getId());
-//        assertEquals(expectedUser.getEmail(), actualUser.getEmail());
-//        assertEquals(expectedUser, actualUser);
-//    }
-//    @Test
-//    public void deleteUserExists() {
-//        doNothing().when(userRepository).deleteById(anyLong());
-//
-//        userService.deleteUserById(1L);
-//        verify(userRepository, times(1)).deleteById(1L);
-//    }
 }
