@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto, Long userId) {
-        User user = validateUser(userId);
+        User user = userRepository.validateUser(userId);
         String updatedName = userDto.getName();
         if (updatedName != null) {
             user.setName(updatedName);
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long userId) {
-        User user = validateUser(userId);
+        User user = userRepository.validateUser(userId);
         return UserMapper.toUserDto(user);
     }
 
@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserById(Long userId) {
-        validateUser(userId);
+        userRepository.validateUser(userId);
         userRepository.deleteById(userId);
     }
 

@@ -7,8 +7,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,7 +24,6 @@ class UserServiceImplTest {
     private UserRepository userRepository;
     @InjectMocks
     private UserServiceImpl userService;
-
     private UserDto userDto;
     private User user;
 
@@ -53,6 +54,34 @@ class UserServiceImplTest {
     }
 
     @Test
+    public void renewalUserWithCorrectData() {
+        UserDto userNewDto = UserDto.builder()
+                .name("NewName")
+                .email("userNEWname@gmail.com")
+                .build();
+        User updatedUser = new User("NewName","userNEWname@gmail.com");
+        UserDto expectedUser = UserMapper.toUserDto(updatedUser);
+
+        when(userRepository.validateUser(anyLong())).thenReturn(user);
+        when(userRepository.save(any())).thenReturn(updatedUser);
+        UserDto actualNewUser = userService.updateUser(userNewDto, user.getId());
+        assertEquals(expectedUser, actualNewUser);
+        verify(userRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void getUserById() {
+        UserDto expectedUser = UserMapper.toUserDto(user);
+
+        when(userRepository.validateUser(anyLong())).thenReturn(user);
+        UserDto actualUser = userService.getUserById(1L);
+        assertNotNull(actualUser);
+        assertEquals(expectedUser.getId(), actualUser.getId());
+        assertEquals(expectedUser.getEmail(), actualUser.getEmail());
+        assertEquals(expectedUser, actualUser);
+    }
+
+    @Test
     public void getAllUsers() {
         List<UserDto> expectedUserList = new ArrayList<>();
         expectedUserList.add(userDto);
@@ -63,5 +92,13 @@ class UserServiceImplTest {
         assertFalse(actualUserList.isEmpty());
         assertEquals(1, actualUserList.size());
         assertEquals(expectedUserList, actualUserList);
+    }
+
+    @Test
+    public void deleteUserExists() {
+        doNothing().when(userRepository).deleteById(anyLong());
+
+        userService.deleteUserById(1L);
+        verify(userRepository, times(1)).deleteById(1L);
     }
 }
