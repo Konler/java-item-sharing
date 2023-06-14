@@ -104,7 +104,6 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getItemsByUserId(Long userId, Integer from, Integer size) {
         userService.validateUser(userId);
         List<Item> items = itemRepository.findAllByOwnerId(userId);
-        PageRequest pageRequest = new PageSetup(from, size, Sort.unsorted());
         if (items.isEmpty()) {
             log.warn(LogMessages.NOT_FOUND.toString());
             throw new NotFoundException(LogMessages.NOT_FOUND.toString());
@@ -136,7 +135,6 @@ public class ItemServiceImpl implements ItemService {
             return Collections.emptyList();
         }
         String lowerText = text.toLowerCase();
-        PageRequest pageRequest = new PageSetup(from, size, Sort.unsorted());
         Collection<Item> items = itemRepository.searchItemByText(lowerText);
         return items.stream()
                 .map(ItemMapper::toItemDto)
