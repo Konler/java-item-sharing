@@ -26,6 +26,7 @@ class UserServiceImplTest {
     private UserServiceImpl userService;
     private UserDto userDto;
     private User user;
+    private User savedUser;
 
     @BeforeEach
     void setUp() {
@@ -100,5 +101,10 @@ class UserServiceImplTest {
 
         userService.deleteUserById(1L);
         verify(userRepository, times(1)).deleteById(1L);
+    }
+
+    @Test
+    public void validateSavedUser() {
+        assertEquals(user.getName(), userService.validateUser(savedUser.getId()).getName());
     }
 }
