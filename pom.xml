@@ -146,7 +146,7 @@
 								<exclude>**/Booking.class</exclude>
 								<exclude>**/CommentMapper.class</exclude>
 								<exclude>**/ItemDtoShort.class</exclude>
-								<exclude>**/ItemMapper.class</exclude>
+								<exclude>**/KeyNotFoundException.class</exclude>
 							</excludes>
 					</configuration>
 					<executions>

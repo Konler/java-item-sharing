@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -53,7 +54,7 @@ class UserServiceImplTest {
         assertEquals(userDto.getEmail(), actualNewUser.getEmail());
         verify(userRepository, times(1)).save(any());
     }
-
+  
     @Test
     public void renewalUserWithCorrectData() {
         UserDto userNewDto = UserDto.builder()
@@ -102,9 +103,10 @@ class UserServiceImplTest {
         userService.deleteUserById(1L);
         verify(userRepository, times(1)).deleteById(1L);
     }
-
     @Test
-    public void validateSavedUser() {
-        assertEquals(user.getName(), userService.validateUser(savedUser.getId()).getName());
+    public void validateNotSavedUser() {
+        assertThrows(NotFoundException.class, () -> userService.validateUser(99L));
     }
+
+
 }

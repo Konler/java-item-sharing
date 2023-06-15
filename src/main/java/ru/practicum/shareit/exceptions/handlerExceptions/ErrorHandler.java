@@ -41,14 +41,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public Map<String, String> handleAlreadyExistException(final AlreadyExistException e) {
-        log.info(LogMessages.ALREADY_EXIST_ERROR_STATUS.toString());
-        return Map.of("error", "Такой объект уже существует",
-                "errorMessage", e.getMessage());
-    }
-
-    @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public Map<String, String> handleIllegalAccessException(final IllegalAccessException e) {
         log.info(LogMessages.ILLEGAL_ACCESS_ERROR_STATUS.toString());

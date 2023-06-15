@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
+import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
