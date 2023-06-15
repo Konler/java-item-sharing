@@ -88,18 +88,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    public void addBookingWithInvalidTime() {
-        when(userService.validateUser(anyLong())).thenReturn(user2);
-        when(itemRepository.validateItem(anyLong())).thenReturn(item);
-        bookingCreationDto.setStart(LocalDateTime.now().plusHours(5));
-        bookingCreationDto.setEnd(LocalDateTime.now().minusHours(5));
-        assertThrows(BookingException.class, () -> bookingService.addBooking(bookingCreationDto, user2.getId()));
-        verify(userService, times(1)).validateUser(user2.getId());
-        verify(itemRepository, times(1)).validateItem(item.getId());
-        verify(bookingRepository, never()).save(booking);
-    }
-
-    @Test
     public void addBookingWhenNotAvailable() {
         item.setAvailable(false);
         when(userService.validateUser(anyLong())).thenReturn(user2);

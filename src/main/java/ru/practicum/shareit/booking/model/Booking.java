@@ -21,16 +21,21 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
     @JoinColumn(name = "item_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Item item;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booker_id")
     private User booker;
+
     @Enumerated(EnumType.STRING)
     private Status status;
+
     @Column(name = "start_date", nullable = false)
     private LocalDateTime start;
+
     @Column(name = "end_date", nullable = false)
     private LocalDateTime end;
 }
