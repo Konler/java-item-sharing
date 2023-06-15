@@ -54,14 +54,14 @@ class UserServiceImplTest {
         assertEquals(userDto.getEmail(), actualNewUser.getEmail());
         verify(userRepository, times(1)).save(any());
     }
-  
+
     @Test
     public void renewalUserWithCorrectData() {
         UserDto userNewDto = UserDto.builder()
                 .name("NewName")
                 .email("userNEWname@gmail.com")
                 .build();
-        User updatedUser = new User("NewName","userNEWname@gmail.com");
+        User updatedUser = new User("NewName", "userNEWname@gmail.com");
         UserDto expectedUser = UserMapper.toUserDto(updatedUser);
 
         when(userRepository.validateUser(anyLong())).thenReturn(user);
@@ -103,10 +103,9 @@ class UserServiceImplTest {
         userService.deleteUserById(1L);
         verify(userRepository, times(1)).deleteById(1L);
     }
+
     @Test
     public void validateNotSavedUser() {
         assertThrows(NotFoundException.class, () -> userService.validateUser(99L));
     }
-
-
 }

@@ -160,7 +160,7 @@ class ItemRequestControllerTest {
 
     @Test
     public void shouldNotCreateWithInvalidCreated() throws Exception {
-        itemRequest.setCreated(LocalDateTime.of(2020, 12,15, 13,0));
+        itemRequest.setCreated(LocalDateTime.of(2020, 12, 15, 13, 0));
         when(itemRequestService.addRequest(any(), anyLong())).thenThrow(new ValidationException("Дата создания запроса должна быть в прошлом или настоящем"));
         mockMvc.perform(post("/requests")
                         .content(objectMapper.writeValueAsString(itemRequest))
