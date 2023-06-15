@@ -52,6 +52,37 @@ class ItemRequestControllerTest {
     }
 
     @Test
+    void getItemRequestById() throws Exception {
+        when(itemRequestService.getItemRequestById(anyLong(), anyLong())).thenReturn(itemRequest);
+
+        mockMvc.perform(get("/requests/{requestId}", 1L)
+                        .header("X-Sharer-User-Id", 1))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(itemRequest.getId()), Long.class))
+                .andExpect(jsonPath("$.description", is(itemRequest.getDescription())))
+                .andExpect(jsonPath("$.created",
+                        is((itemRequest.getCreated().format(formatter)).replaceAll("0+$", ""))))
+                .andExpect(jsonPath("$.requestor", is(itemRequest.getRequestor()), Long.class));
+    }
+
+    @Test
+    public void shouldCreateItemRequest() throws Exception {
+        when(itemRequestService.addRequest(any(), anyLong())).thenReturn(itemRequest);
+        mockMvc.perform(post("/requests")
+                        .content(objectMapper.writeValueAsString(itemRequest))
+                        .header("X-Sharer-User-Id", 1)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(itemRequest.getId()), Long.class))
+                .andExpect(jsonPath("$.description", is(itemRequest.getDescription())))
+                .andExpect(jsonPath("$.created",
+                        is((itemRequest.getCreated().format(formatter)).replaceAll("0+$", ""))))
+                .andExpect(jsonPath("$.requestor", is(itemRequest.getRequestor()), Long.class));
+    }
+
+    @Test
     public void shouldNotCreateItemRequestWithNotFoundUser() throws Exception {
         when(itemRequestService.addRequest(any(), anyLong())).thenThrow(new NotFoundException("Объект не найден {}"));
         mockMvc.perform(post("/requests")
