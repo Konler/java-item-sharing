@@ -333,7 +333,6 @@ class ItemServiceImplTest {
         Pageable page = new PageSetup(from, size, Sort.unsorted());
         when(itemRepository.searchItemByText(anyString(), any(PageRequest.class))).thenReturn(new PageImpl<>(Collections.emptyList()));
         List<ItemDto> foundedItems = itemService.searchItem(text, from, size);
-
         assertTrue(foundedItems.isEmpty());
         verify(itemRepository, times(1)).searchItemByText(text, page);
     }
