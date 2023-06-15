@@ -144,6 +144,9 @@
 								<exclude>**/BookingDto.class</exclude>
 								<exclude>**/BookingDtoLittle.class</exclude>
 								<exclude>**/Booking.class</exclude>
+								<exclude>**/CommentMapper.class</exclude>
+								<exclude>**/ItemDtoShort.class</exclude>
+								<exclude>**/ItemMapper.class</exclude>
 							</excludes>
 					</configuration>
 					<executions>
