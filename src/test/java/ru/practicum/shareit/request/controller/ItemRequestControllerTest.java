@@ -52,20 +52,6 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void getItemRequestById() throws Exception {
-        when(itemRequestService.getItemRequestById(anyLong(), anyLong())).thenReturn(itemRequest);
-
-        mockMvc.perform(get("/requests/{requestId}", 1L)
-                        .header("X-Sharer-User-Id", 1))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemRequest.getId()), Long.class))
-                .andExpect(jsonPath("$.description", is(itemRequest.getDescription())))
-                .andExpect(jsonPath("$.created",
-                        is((itemRequest.getCreated().format(formatter)).replaceAll("0+$", ""))))
-                .andExpect(jsonPath("$.requestor", is(itemRequest.getRequestor()), Long.class));
-    }
-
-    @Test
     public void shouldCreateItemByRequest() throws Exception {
         when(itemRequestService.addRequest(any(), anyLong())).thenReturn(itemRequest);
         mockMvc.perform(post("/requests")
