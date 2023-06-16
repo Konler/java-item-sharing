@@ -44,9 +44,10 @@ class BookingControllerTest {
     private BookingService bookingService;
     private BookingCreatDto bookingCreationDto;
     private BookingDto bookingDto;
+    private static final String X_SHARER_USER_ID = "X-Sharer-User-Id";
 
     @BeforeEach
-    void setUp() {
+    void create() {
         bookingCreationDto = BookingCreatDto.builder()
                 .start(LocalDateTime.now().plusDays(1))
                 .end(LocalDateTime.now().plusDays(2))
@@ -67,7 +68,7 @@ class BookingControllerTest {
         bookingCreationDto.setStart(null);
         when(bookingService.addBooking(any(), anyLong())).thenThrow(new ValidationException(""));
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +80,7 @@ class BookingControllerTest {
     public void shouldCreateBooking() throws Exception {
         when(bookingService.addBooking(any(), anyLong())).thenReturn(bookingDto);
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -93,12 +94,12 @@ class BookingControllerTest {
     }
 
     @Test
-    public void shouldNotCreateBookingWithInvalidStart() throws Exception {
+    public void shouldNotCreateBookingWithWrongStart() throws Exception {
         bookingCreationDto.setStart(LocalDateTime.of(2020, 12, 12, 13, 15));
         when(bookingService.addBooking(any(), anyLong()))
                 .thenThrow(new ValidationException("Дата начала бронирования должна быть в настоящем или будущем"));
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -107,12 +108,12 @@ class BookingControllerTest {
     }
 
     @Test
-    public void shouldNotCreateBookingWithInvalidEnd() throws Exception {
+    public void shouldNotCreateBookingWithWrongEnd() throws Exception {
         bookingCreationDto.setStart(LocalDateTime.of(2020, 12, 12, 13, 15));
         when(bookingService.addBooking(any(), anyLong()))
                 .thenThrow(new ValidationException("Дата конца бронирования должна быть в настоящем или будущем"));
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -121,11 +122,11 @@ class BookingControllerTest {
     }
 
     @Test
-    public void shouldNotCreateBookingWithEmptyEnd() throws Exception {
+    public void shouldNotCreateBookingEmptyEnd() throws Exception {
         bookingCreationDto.setEnd(null);
         when(bookingService.addBooking(any(), anyLong())).thenThrow(new ValidationException(""));
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -134,11 +135,11 @@ class BookingControllerTest {
     }
 
     @Test
-    public void shouldNotCreateBookingWithEmptyItemId() throws Exception {
+    public void shouldNotCreateBookingEmptyItemId() throws Exception {
         bookingCreationDto.setItemId(null);
         when(bookingService.addBooking(any(), anyLong())).thenThrow(new ValidationException(""));
         mockMvc.perform(post("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -147,13 +148,13 @@ class BookingControllerTest {
     }
 
     @Test
-    public void shouldNotRenewalBookingByNotOwner() throws Exception {
+    public void shouldNotUpdateBookingByNotOwner() throws Exception {
         bookingCreationDto.setStatus(Status.APPROVED);
         when(bookingService.updateBooking(anyLong(), anyLong(), anyBoolean()))
                 .thenThrow(new InvalidIdException("Нет прав на подтверждение бронирования. " +
                         "Пользователь {} не является собственником предмета"));
         mockMvc.perform(patch("/bookings/{bookingId}", 1L)
-                        .header("X-Sharer-User-Id", 3)
+                        .header(X_SHARER_USER_ID, 3)
                         .param("approved", "true")
                         .content(objectMapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -167,7 +168,7 @@ class BookingControllerTest {
         bookingCreationDto.setStatus(Status.APPROVED);
         when(bookingService.updateBooking(anyLong(), anyLong(), anyBoolean())).thenReturn(bookingDto);
         mockMvc.perform(patch("/bookings/{bookingId}", 1L)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .param("approved", "true")
                         .content(objectMapper.writeValueAsString(bookingDto))
                         .characterEncoding(StandardCharsets.UTF_8)
@@ -182,10 +183,10 @@ class BookingControllerTest {
     }
 
     @Test
-    void shouldNotGetBookingByNotFoundId() throws Exception {
+    void shouldNotGetBookingFindByNotFoundId() throws Exception {
         when(bookingService.getBookingById(anyLong(), anyLong())).thenThrow(new NotFoundException("Объект не найден {}"));
         mockMvc.perform(get("/bookings/{bookingId}", 99L)
-                        .header("X-Sharer-User-Id", 1))
+                        .header(X_SHARER_USER_ID, 1))
                 .andExpect(status().isNotFound());
     }
 
@@ -193,7 +194,7 @@ class BookingControllerTest {
     public void getBookingById() throws Exception {
         when(bookingService.getBookingById(anyLong(), anyLong())).thenReturn(bookingDto);
         mockMvc.perform(get("/bookings/{bookingId}", 1L)
-                        .header("X-Sharer-User-Id", 1))
+                        .header(X_SHARER_USER_ID, 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(bookingDto.getId()), Long.class))
                 .andExpect(jsonPath("$.start", is(bookingDto.getStart().format(formatter))))
@@ -203,10 +204,10 @@ class BookingControllerTest {
     }
 
     @Test
-    void shouldNotGetBookingByIdNotFoundUser() throws Exception {
+    void shouldNotGetBookingNotFoundUserId() throws Exception {
         when(bookingService.getBookingById(anyLong(), anyLong())).thenThrow(new NotFoundException("Объект не найден {}"));
         mockMvc.perform(get("/bookings/{bookingId}", 1L)
-                        .header("X-Sharer-User-Id", 99))
+                        .header(X_SHARER_USER_ID, 99))
                 .andExpect(status().isNotFound());
     }
 
@@ -214,7 +215,7 @@ class BookingControllerTest {
     public void getAllUserBookings() throws Exception {
         when(bookingService.getAllUserBookings(anyLong(), any(), anyInt(), anyInt())).thenReturn(List.of(bookingDto));
         mockMvc.perform(get("/bookings")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .param("state", "ALL")
                         .param("from", "0")
                         .param("size", "20"))
@@ -231,7 +232,7 @@ class BookingControllerTest {
     public void getOwnerAllItemBookings() throws Exception {
         when(bookingService.getOwnerAllItemBookings(anyLong(), any(), anyInt(), anyInt())).thenReturn(List.of(bookingDto));
         mockMvc.perform(get("/bookings/owner")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .param("state", "ALL")
                         .param("from", "0")
                         .param("size", "20"))

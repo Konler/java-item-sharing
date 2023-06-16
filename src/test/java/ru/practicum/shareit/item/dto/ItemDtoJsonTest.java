@@ -37,7 +37,7 @@ class ItemDtoJsonTest {
     }
 
     @Test
-    void testItemDtoN() throws IOException {
+    void testItemDtoWithException() throws IOException {
         ItemDto itemDto = ItemDto.builder()
                 .id(1L)
                 .name(null)

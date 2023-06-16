@@ -67,13 +67,13 @@ class ItemRepositoryTest {
     }
 
     @AfterEach
-    public void deleteItem() {
+    public void deleteItems() {
         itemRepository.deleteAll();
         userRepository.deleteAll();
     }
 
     @Test
-    public void validateSavedItem() {
+    public void validateItem() {
         assertEquals(item.getName(), itemRepository.validateItem(savedItem.getId()).getName());
         assertEquals(item2.getName(), itemRepository.validateItem(savedItem2.getId()).getName());
     }
@@ -84,7 +84,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    public void searchItemByText() {
+    public void searchItemByHisText() {
         assertEquals(List.of(), itemRepository.searchItemByText("kjfgkjdg", page).toList());
         assertEquals(List.of(), itemRepository.searchItemByText(null, page).toList());
         assertEquals(List.of(item, item2), itemRepository.searchItemByText("Item", page).toList());
@@ -92,7 +92,7 @@ class ItemRepositoryTest {
     }
 
     @Test
-    public void findAllByOwnerId() {
+    public void findAllItemsByOwnerId() {
         assertEquals(List.of(item), itemRepository.findAllByOwnerId(user.getId(), page).toList());
         assertEquals(List.of(), itemRepository.findAllByOwnerId(99L, page).toList());
         item2.setOwner(user);

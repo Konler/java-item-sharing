@@ -35,7 +35,7 @@ class ItemRequestServiceImplIntegrationTest {
     private AddItemRequestDto savedRequest;
 
     @BeforeEach
-    void setUp() {
+    void create() {
         itemOwner = User.builder()
                 .name("Name")
                 .email("username@gmail.com")

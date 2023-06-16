@@ -148,7 +148,7 @@ class BookingRepositoryTest {
     }
 
     @Test
-    public void findAllByOwnerAndStatus() {
+    public void findAllByOwnersAndStatus() {
         assertEquals(List.of(booking2), bookingRepository.findAllByOwnerAndStatus(item.getOwner().getId(),
                 Status.WAITING, SORT_BY_START_ASC));
         assertThat(booking2).hasFieldOrPropertyWithValue("id", booking2.getId());
@@ -197,7 +197,7 @@ class BookingRepositoryTest {
     }
 
     @Test
-    public void findByBookerIdAndStatusIs() {
+    public void findByBookerIdAndStatus() {
         assertEquals(List.of(booking), bookingRepository.findByBookerIdAndStatusIs(booking.getBooker().getId(),
                 Status.WAITING, page).toList());
         assertThat(booking).hasFieldOrPropertyWithValue("id", booking.getId());
@@ -221,7 +221,7 @@ class BookingRepositoryTest {
     }
 
     @Test
-    public void findByBookerIdAndNowBetweenStartAndEnd() {
+    public void findByBookerIdAndBetweenStartAndEnd() {
         booking.setStart(LocalDateTime.now().minusDays(2));
         assertEquals(List.of(booking), bookingRepository.findByBookerIdAndNowBetweenStartAndEnd(booking.getBooker().getId(),
                 LocalDateTime.now(), page).toList());
@@ -234,7 +234,7 @@ class BookingRepositoryTest {
     }
 
     @Test
-    public void findByBookerIdAndStartIsAfter() {
+    public void findByBookerIdAndStartAfter() {
         assertEquals(List.of(booking), bookingRepository.findByBookerIdAndStartIsAfter(booking.getBooker().getId(),
                 LocalDateTime.now(), page).toList());
         assertThat(booking).hasFieldOrPropertyWithValue("id", booking.getId());
@@ -246,7 +246,7 @@ class BookingRepositoryTest {
     }
 
     @Test
-    public void findByBookerIdAndEndIsBefore() {
+    public void findByBookerIdAndEndBefore() {
         booking.setEnd(LocalDateTime.now().minusHours(2));
         assertEquals(List.of(booking), bookingRepository.findByBookerIdAndEndIsBefore(booking.getBooker().getId(),
                 LocalDateTime.now(), page).toList());
@@ -259,7 +259,7 @@ class BookingRepositoryTest {
     }
 
     @Test
-    public void findAllByItemOwnerIdAndStatusIs() {
+    public void findAllByItemOwnerIdAndStatus() {
         assertEquals(List.of(booking2), bookingRepository.findAllByItemOwnerIdAndStatusIs(item.getOwner().getId(), Status.WAITING, page).toList());
         assertThat(booking2).hasFieldOrPropertyWithValue("id", booking2.getId());
         assertThat(booking2.getItem()).hasFieldOrPropertyWithValue("id", booking2.getItem().getId());
@@ -283,7 +283,7 @@ class BookingRepositoryTest {
     }
 
     @Test
-    public void findAllByItemIdAndBookerIdAndStatusIsAndEndBefore() {
+    public void findAllByItemIdAndBookerIdAndStatus() {
         booking.setEnd(LocalDateTime.now().minusHours(2));
         assertEquals(List.of(booking), bookingRepository.findAllByItemIdAndBookerIdAndStatusIsAndEndBefore(booking.getItem().getId(),
                 booking.getBooker().getId(), Status.WAITING, LocalDateTime.now()));
@@ -309,7 +309,7 @@ class BookingRepositoryTest {
     }
 
     @Test
-    public void findFirstByItemIdAndStartBeforeAndStatus() {
+    public void findFirstByItemIdAndStartBefore() {
         booking.setStart(LocalDateTime.now().minusDays(2));
         Optional<Booking> booking = bookingRepository.findFirstByItemIdAndStartBeforeAndStatus(item2.getId(),
                 LocalDateTime.now(), Status.WAITING, SORT_BY_START_DESC);
@@ -319,7 +319,7 @@ class BookingRepositoryTest {
     }
 
     @Test
-    public void findFirstByItemIdAndStartAfterAndStatus() {
+    public void findFirstByItemId() {
         Optional<Booking> booking = bookingRepository.findFirstByItemIdAndStartAfterAndStatus(item2.getId(),
                 LocalDateTime.now(), Status.WAITING, SORT_BY_START_DESC);
         assertEquals(booking, booking);
@@ -327,7 +327,7 @@ class BookingRepositoryTest {
     }
 
     @Test
-    public void findByItemIdAndStatus() {
+    public void findByItemId() {
         List<Booking> booking = bookingRepository.findByItemIdAndStatus(item2.getId(), Status.WAITING);
         assertEquals(booking, booking);
     }

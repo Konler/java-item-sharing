@@ -109,7 +109,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    public void renewalBookingApproved() {
+    public void updateBookingApproved() {
         long bookingId = booking.getId();
         when(bookingRepository.validateBooking(anyLong())).thenReturn(booking);
         when(userService.validateUser(anyLong())).thenReturn(user);
@@ -129,7 +129,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    public void renewalBookingRejected() {
+    public void updateBookingRejected() {
         long bookingId = booking.getId();
         when(bookingRepository.validateBooking(anyLong())).thenReturn(booking);
         when(userService.validateUser(anyLong())).thenReturn(user);
@@ -149,7 +149,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    public void renewalBookingWithNoRights() {
+    public void updateBookingWithNoRights() {
         long bookingId = booking.getId();
         when(bookingRepository.validateBooking(anyLong())).thenReturn(booking);
         assertThrows(InvalidIdException.class, () -> bookingService.updateBooking(bookingId, 99L, true));
@@ -157,7 +157,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    public void renewalBookingWhenAlreadyApproved() {
+    public void updateBookingWhenAlreadyApproved() {
         long bookingId = booking.getId();
         booking.setStatus(Status.APPROVED);
         when(bookingRepository.validateBooking(anyLong())).thenReturn(booking);
@@ -167,7 +167,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    public void getBookingByUnknown() {
+    public void getBookingByNotFound() {
         User user3 = User.builder()
                 .id(3L)
                 .name("Name3")
@@ -183,7 +183,7 @@ class BookingServiceImplTest {
     }
 
     @Test
-    public void getBookingById() {
+    public void getBookingByBookingId() {
         long userId = user.getId();
         long bookingId = booking.getId();
         BookingDto exitedBookingDto = BookingMapper.toBookingDto(booking);

@@ -13,6 +13,7 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,7 +38,7 @@ class ItemRequestRepositoryTest {
     private Pageable page;
 
     @BeforeEach
-    void setUp() {
+    void create() {
         user = User.builder()
                 .name("Name")
                 .email("username@gmail.com")

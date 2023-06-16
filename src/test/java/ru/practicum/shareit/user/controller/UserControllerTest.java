@@ -40,7 +40,7 @@ class UserControllerTest {
     private UserDto userDto;
 
     @BeforeEach
-    void setUp() {
+    void create() {
         userDto = UserDto.builder()
                 .id(1L)
                 .name("Name")
@@ -109,7 +109,7 @@ class UserControllerTest {
     }
 
     @Test
-    public void removeUserById() throws Exception {
+    public void deleteUserById() throws Exception {
         doNothing().when(userService).deleteUserById(anyLong());
         mockMvc.perform(delete("/users/{userId}", 1L))
                 .andExpect(status().isOk());

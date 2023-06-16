@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(userId);
     }
 
-    public User validateUser(Long userId) {
+     public  User validateUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 LogMessages.NOT_FOUND.toString() + userId));
     }

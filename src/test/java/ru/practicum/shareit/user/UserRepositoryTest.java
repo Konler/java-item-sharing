@@ -20,7 +20,7 @@ class UserRepositoryTest {
     private User savedUser;
 
     @BeforeEach
-    void setUp() {
+    void create() {
         user = User.builder()
                 .id(1L)
                 .name("Name")

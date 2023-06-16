@@ -50,7 +50,7 @@ class ItemRequestServiceImplTest {
     private Item item;
 
     @BeforeEach
-    void setUp() {
+    void create() {
         user = User.builder()
                 .id(1L)
                 .name("Name")

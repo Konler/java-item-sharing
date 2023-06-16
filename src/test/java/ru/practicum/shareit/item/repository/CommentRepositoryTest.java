@@ -103,7 +103,7 @@ class CommentRepositoryTest {
     }
 
     @Test
-    public void findAllByItemId() {
+    public void findAllCommentsByItemId() {
         assertEquals(List.of(comment), commentRepository.findAllByItemId(item.getId()));
         assertThat(List.of(comment).get(0)).hasFieldOrPropertyWithValue("id", comment.getId());
         assertThat(List.of(comment).get(0)).hasFieldOrPropertyWithValue("author", comment.getAuthor());
@@ -113,7 +113,7 @@ class CommentRepositoryTest {
     }
 
     @Test
-    public void findAllByItemIn() {
+    public void findAllCommentsByItemIds() {
         List<Item> items = new ArrayList<>();
         items.add(item);
         assertEquals(List.of(comment), commentRepository.findAllByItemIn(items));

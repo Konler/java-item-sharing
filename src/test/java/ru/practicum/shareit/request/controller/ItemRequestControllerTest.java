@@ -42,7 +42,7 @@ class ItemRequestControllerTest {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
     @BeforeEach
-    void setUp() {
+    void create() {
         LocalDateTime created = LocalDateTime.now();
         itemRequest = AddItemRequestDto.builder()
                 .created(created)
@@ -66,7 +66,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    public void shouldCreateItemRequest() throws Exception {
+    public void shouldCreateItemByRequest() throws Exception {
         when(itemRequestService.addRequest(any(), anyLong())).thenReturn(itemRequest);
         mockMvc.perform(post("/requests")
                         .content(objectMapper.writeValueAsString(itemRequest))
@@ -83,7 +83,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    public void shouldNotCreateItemRequestWithNotFoundUser() throws Exception {
+    public void shouldNotCreateItemRequestWithNotFound() throws Exception {
         when(itemRequestService.addRequest(any(), anyLong())).thenThrow(new NotFoundException("Объект не найден {}"));
         mockMvc.perform(post("/requests")
                         .header("X-Sharer-User-Id", 99)
@@ -95,7 +95,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void shouldNotGetItemRequestByNotFoundId() throws Exception {
+    void shouldNotGetItemRequestByNotFound() throws Exception {
         when(itemRequestService.getItemRequestById(anyLong(), anyLong())).thenThrow(new NotFoundException("Объект не найден {}"));
 
         mockMvc.perform(get("/requests/{requestId}", 99L)
@@ -128,7 +128,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    void getOtherUsersRequests() throws Exception {
+    void getUsersRequests() throws Exception {
         List<AddItemRequestDto> itemRequests = new ArrayList<>();
         itemRequests.add(itemRequest);
         when(itemRequestService.getOtherUsersRequests(anyLong(), anyInt(), anyInt())).thenReturn(itemRequests);
@@ -146,7 +146,7 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    public void shouldNotCreateWithEmptyDescription() throws Exception {
+    public void shouldNotCreatedWithEmptyDescription() throws Exception {
         itemRequest.setDescription("");
         when(itemRequestService.addRequest(any(), anyLong())).thenThrow(new ValidationException("Описание не может быть пустым"));
         mockMvc.perform(post("/requests")
@@ -159,8 +159,8 @@ class ItemRequestControllerTest {
     }
 
     @Test
-    public void shouldNotCreateWithInvalidCreated() throws Exception {
-        itemRequest.setCreated(LocalDateTime.of(2020, 12, 15, 13, 0));
+    public void shouldNotCreatedWithInvalidCreated() throws Exception {
+        itemRequest.setCreated(LocalDateTime.of(2020, 12,15, 13,0));
         when(itemRequestService.addRequest(any(), anyLong())).thenThrow(new ValidationException("Дата создания запроса должна быть в прошлом или настоящем"));
         mockMvc.perform(post("/requests")
                         .content(objectMapper.writeValueAsString(itemRequest))

@@ -21,7 +21,7 @@ class UserServiceIntegrationTest {
     private UserDto user2;
 
     @BeforeEach
-    void setUp() {
+    void create() {
         user = UserDto.builder()
                 .name("Name")
                 .email("username@gmail.com")

@@ -38,6 +38,8 @@ class ItemControllerTest {
     private ItemService itemService;
     private ItemDto itemDto;
 
+    private static final String X_SHARER_USER_ID = "X-Sharer-User-Id";
+
     @BeforeEach
     void setUp() {
         itemDto = ItemDto.builder()
@@ -48,10 +50,10 @@ class ItemControllerTest {
     }
 
     @Test
-    public void shouldCreateItem() throws Exception {
+    public void shouldToCreateItem() throws Exception {
         when(itemService.addItem(anyLong(), any())).thenReturn(itemDto);
         mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -63,10 +65,10 @@ class ItemControllerTest {
     }
 
     @Test
-    public void shouldNotCreateItemWithEmptyName() throws Exception {
+    public void shouldNotCreateItemByEmptyName() throws Exception {
         when(itemService.addItem(anyLong(), any())).thenThrow(new ValidationException("Имя не может быть пустым"));
         mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -78,7 +80,7 @@ class ItemControllerTest {
     public void shouldNotCreateItemWithEmptyDescription() throws Exception {
         when(itemService.addItem(anyLong(), any())).thenThrow(new ValidationException("Описание не может быть пустым"));
         mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -90,7 +92,7 @@ class ItemControllerTest {
     public void shouldNotCreateItemWithEmptyAvailable() throws Exception {
         when(itemService.addItem(anyLong(), any())).thenThrow(new ValidationException("Статус доступности вещи отсутствует"));
         mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -102,7 +104,7 @@ class ItemControllerTest {
     public void shouldNotCreateItemWithNotFoundUser() throws Exception {
         when(itemService.addItem(anyLong(), any())).thenThrow(new NotFoundException("Объект не найден {}"));
         mockMvc.perform(post("/items")
-                        .header("X-Sharer-User-Id", 99)
+                        .header(X_SHARER_USER_ID, 99)
                         .content(objectMapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -116,7 +118,7 @@ class ItemControllerTest {
         itemDto.setDescription("New item description");
         when(itemService.updateItem(anyLong(), any(), anyLong())).thenReturn(itemDto);
         mockMvc.perform(patch("/items/{itemId}", 1L)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(itemDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -131,7 +133,7 @@ class ItemControllerTest {
     public void getItemById() throws Exception {
         when(itemService.getItemById(anyLong(), anyLong())).thenReturn(itemDto);
         mockMvc.perform(get("/items/{itemId}", 1L)
-                        .header("X-Sharer-User-Id", 1))
+                        .header(X_SHARER_USER_ID, 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
                 .andExpect(jsonPath("$.name", is(itemDto.getName())))
@@ -142,7 +144,7 @@ class ItemControllerTest {
     void shouldNotGetItemByNotFoundId() throws Exception {
         when(itemService.getItemById(anyLong(), anyLong())).thenThrow(new NotFoundException("Объект не найден {}"));
         mockMvc.perform(get("/items/{itemId}", 99L)
-                        .header("X-Sharer-User-Id", 1))
+                        .header(X_SHARER_USER_ID, 1))
                 .andExpect(status().isNotFound());
     }
 
@@ -150,7 +152,7 @@ class ItemControllerTest {
     void shouldNotGetItemByIdNotFoundUser() throws Exception {
         when(itemService.getItemById(anyLong(), anyLong())).thenThrow(new NotFoundException("Объект не найден {}"));
         mockMvc.perform(get("/items/{itemId}", 1L)
-                        .header("X-Sharer-User-Id", 99))
+                        .header(X_SHARER_USER_ID, 99))
                 .andExpect(status().isNotFound());
     }
 
@@ -158,7 +160,7 @@ class ItemControllerTest {
     public void searchItemByText() throws Exception {
         when(itemService.searchItem(anyString(), anyInt(), anyInt())).thenReturn(List.of(itemDto));
         mockMvc.perform(get("/items/search")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .param("text", "name")
                         .param("from", "0")
                         .param("size", "10"))
@@ -175,7 +177,7 @@ class ItemControllerTest {
         items.add(itemDto);
         when(itemService.getItemsByUserId(anyLong(), anyInt(), anyInt())).thenReturn(items);
         mockMvc.perform(get("/items")
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .param("from", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
@@ -192,7 +194,7 @@ class ItemControllerTest {
                 .build();
         when(itemService.addComment(anyLong(), anyLong(), any())).thenReturn(commentDto);
         mockMvc.perform(post("/items/{itemId}/comment", 1L)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(commentDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -210,7 +212,7 @@ class ItemControllerTest {
                 .build();
         when(itemService.addComment(anyLong(), anyLong(), any())).thenThrow(new ValidationException("Отсутствует текст поискового запроса"));
         mockMvc.perform(post("/items/{itemId}/comment", 1L)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(commentDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -225,7 +227,7 @@ class ItemControllerTest {
                 .build();
         when(itemService.addComment(anyLong(), anyLong(), any())).thenThrow(new NotFoundException("Объект не найден {}"));
         mockMvc.perform(post("/items/{itemId}/comment", 99L)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(commentDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -240,7 +242,7 @@ class ItemControllerTest {
                 .build();
         when(itemService.addComment(anyLong(), anyLong(), any())).thenThrow(new NotFoundException("Объект не найден {}"));
         mockMvc.perform(post("/items/{itemId}/comment", 99L)
-                        .header("X-Sharer-User-Id", 1)
+                        .header(X_SHARER_USER_ID, 1)
                         .content(objectMapper.writeValueAsString(commentDto))
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)

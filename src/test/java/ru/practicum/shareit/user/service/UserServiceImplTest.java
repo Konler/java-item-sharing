@@ -30,7 +30,7 @@ class UserServiceImplTest {
     private User savedUser;
 
     @BeforeEach
-    void setUp() {
+    void create() {
         user = User.builder()
                 .id(1L)
                 .name("Name")
@@ -56,7 +56,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void renewalUserWithCorrectData() {
+    public void updateUserWithCorrectData() {
         UserDto userNewDto = UserDto.builder()
                 .name("NewName")
                 .email("userNEWname@gmail.com")
@@ -97,7 +97,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    public void deleteUserExists() {
+    public void deleteUser() {
         doNothing().when(userRepository).deleteById(anyLong());
 
         userService.deleteUserById(1L);
