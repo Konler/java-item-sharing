@@ -137,7 +137,7 @@ public class ItemServiceImpl implements ItemService {
         }
         String lowerText = text.toLowerCase();
         PageRequest pageRequest = new PageSetup(from, size, Sort.unsorted());
-        Collection<Item> items = itemRepository.searchItemByText(lowerText,
+        List<Item> items = itemRepository.searchItemByText(lowerText,
                 pageRequest).getContent();
         return items.stream()
                 .map(ItemMapper::toItemDto)
