@@ -15,5 +15,6 @@ public interface UserService {
     List<UserDto> getAllUsers();
 
     void deleteUserById(Long userId);
+
     User validateUser(Long userId);
 }

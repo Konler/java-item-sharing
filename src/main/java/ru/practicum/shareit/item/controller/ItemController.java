@@ -9,7 +9,6 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.messages.LogMessages;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;

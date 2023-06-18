@@ -2,7 +2,6 @@ package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.messages.LogMessages;
@@ -60,7 +59,7 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(userId);
     }
 
-     public  User validateUser(Long userId) {
+    public User validateUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 LogMessages.NOT_FOUND.toString() + userId));
     }
