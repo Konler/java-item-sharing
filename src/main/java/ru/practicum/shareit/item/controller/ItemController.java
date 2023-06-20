@@ -9,6 +9,8 @@ import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.messages.LogMessages;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -42,15 +44,19 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByUserId(@RequestHeader(X_SHARER_USER_ID) Long userId) {
+    public List<ItemDto> getItemsByUserId(@RequestHeader(X_SHARER_USER_ID) Long userId,
+                                          @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Integer from,
+                                          @RequestParam(name = "size", defaultValue = "10") @Positive Integer size) {
         log.info(LogMessages.GET_ALL_REQUEST.toString());
-        return itemService.getItemsByUserId(userId);
+        return itemService.getItemsByUserId(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItem(@RequestParam String text) {
+    public List<ItemDto> searchItem(@RequestParam String text,
+                                    @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Integer from,
+                                    @RequestParam(name = "size", defaultValue = "10") @Positive Integer size) {
         log.info(LogMessages.SEARCH_REQUEST.toString());
-        return itemService.searchItem(text);
+        return itemService.searchItem(text, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

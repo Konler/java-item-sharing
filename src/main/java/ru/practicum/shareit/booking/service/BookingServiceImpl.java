@@ -2,8 +2,10 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.PageSetup;
 import ru.practicum.shareit.booking.BookingState;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingCreatDto;
@@ -19,7 +21,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.messages.LogMessages;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserServiceImpl;
+import ru.practicum.shareit.user.service.UserService;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
@@ -34,24 +36,25 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
-    private final UserServiceImpl userService;
+
+    private final UserService userService;
     private static final Sort SORT = Sort.sort(Booking.class).by(Booking::getStart).descending();
 
     @Override
     @Transactional
-    public BookingDto addBooking(BookingCreatDto bookingCreatDto, Long userId) {
-        Item item = itemRepository.validateItem(bookingCreatDto.getItemId());
+    public BookingDto addBooking(BookingCreatDto bookingCreationDto, Long userId) {
+        Item item = itemRepository.validateItem(bookingCreationDto.getItemId());
         User user = userService.validateUser(userId);
         if (!item.getAvailable()) {
-            log.warn(LogMessages.BOOKING_NOT_AVAILABLE.toString(), bookingCreatDto.getItemId());
+            log.warn(LogMessages.BOOKING_NOT_AVAILABLE.toString(), bookingCreationDto.getItemId());
             throw new ValidationException(LogMessages.BOOKING_NOT_AVAILABLE.toString());
         }
         if (Objects.equals(item.getOwner().getId(), userId)) {
             log.warn(LogMessages.BOOKING_BY_OWNER.toString());
             throw new NotFoundException(LogMessages.BOOKING_BY_OWNER.toString());
         }
-        bookingDateCheck(bookingCreatDto);
-        Booking booking = bookingRepository.save(BookingMapper.toBooking(bookingCreatDto, item, user));
+        bookingDateCheck(bookingCreationDto);
+        Booking booking = bookingRepository.save(BookingMapper.toBooking(bookingCreationDto, item, user));
         return BookingMapper.toBookingDto(booking);
     }
 
@@ -91,30 +94,33 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getAllUserBookings(Long bookerId, String state) {
+    public List<BookingDto> getAllUserBookings(Long bookerId, String state, Integer from, Integer size) {
+        if (from < 0) {
+            throw new BookingException("Введен отрицательный параметр");
+        }
         userService.validateUser(bookerId);
         LocalDateTime now = LocalDateTime.now();
         BookingState bookingState = toBookingState(state);
         List<Booking> bookingDtoList = Collections.emptyList();
-        ;
+        PageRequest pageable = new PageSetup(from, size, SORT);
         switch (bookingState) {
             case ALL:
-                bookingDtoList = bookingRepository.findAllByBookerId(bookerId, SORT);
+                bookingDtoList = bookingRepository.findAllByBookerId(bookerId, pageable).getContent();
                 break;
             case CURRENT:
-                bookingDtoList = bookingRepository.findByBookerIdAndNowBetweenStartAndEnd(bookerId, now, SORT);
+                bookingDtoList = bookingRepository.findByBookerIdAndNowBetweenStartAndEnd(bookerId, now, pageable).getContent();
                 break;
             case FUTURE:
-                bookingDtoList = bookingRepository.findByBookerIdAndStartIsAfter(bookerId, now, SORT);
+                bookingDtoList = bookingRepository.findByBookerIdAndStartIsAfter(bookerId, now, pageable).getContent();
                 break;
             case PAST:
-                bookingDtoList = bookingRepository.findByBookerIdAndEndIsBefore(bookerId, now, SORT);
+                bookingDtoList = bookingRepository.findByBookerIdAndEndIsBefore(bookerId, now, pageable).getContent();
                 break;
             case WAITING:
-                bookingDtoList = bookingRepository.findByBookerIdAndStatusIs(bookerId, Status.WAITING, SORT);
+                bookingDtoList = bookingRepository.findByBookerIdAndStatusIs(bookerId, Status.WAITING, pageable).getContent();
                 break;
             case REJECTED:
-                bookingDtoList = bookingRepository.findByBookerIdAndStatusIs(bookerId, Status.REJECTED, SORT);
+                bookingDtoList = bookingRepository.findByBookerIdAndStatusIs(bookerId, Status.REJECTED, pageable).getContent();
                 break;
         }
         return bookingDtoList.stream()
@@ -122,30 +128,37 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
-    public List<BookingDto> getOwnerAllItemBookings(Long userId, String state) {
+    public List<BookingDto> getOwnerAllItemBookings(Long userId, String state, Integer from, Integer size) {
+        if (from < 0) {
+            throw new BookingException("Введен отрицательный параметр");
+        }
         userService.validateUser(userId);
         LocalDateTime now = LocalDateTime.now();
         BookingState bookingState = toBookingState(state);
         List<Booking> bookingDtoList = Collections.emptyList();
+        PageRequest pageable = new PageSetup(from, size, SORT);
         switch (bookingState) {
             case ALL:
-                bookingDtoList = bookingRepository.findAllByItemOwnerId(userId, SORT);
+                bookingDtoList = bookingRepository.findAllByItemOwnerId(userId, pageable).getContent();
                 break;
             case CURRENT:
-                bookingDtoList = bookingRepository.findAllCurrentOwnerBookings(userId, now, SORT);
+                bookingDtoList = bookingRepository.findAllCurrentOwnerBookings(userId, now, pageable).getContent();
                 break;
             case FUTURE:
-                bookingDtoList = bookingRepository.findAllByItemOwnerIdAndStartIsAfter(userId, now, SORT);
+                bookingDtoList = bookingRepository.findAllByItemOwnerIdAndStartIsAfter(userId, now, pageable).getContent();
                 break;
             case PAST:
-                bookingDtoList = bookingRepository.findAllByItemOwnerIdAndEndIsBefore(userId, now, SORT);
+                bookingDtoList = bookingRepository.findAllByItemOwnerIdAndEndIsBefore(userId, now, pageable).getContent();
                 break;
             case WAITING:
-                bookingDtoList = bookingRepository.findAllByItemOwnerIdAndStatusIs(userId, Status.WAITING, SORT);
+                bookingDtoList = bookingRepository.findAllByItemOwnerIdAndStatusIs(userId,
+                        Status.WAITING, pageable).getContent();
                 break;
             case REJECTED:
-                bookingDtoList = bookingRepository.findAllByItemOwnerIdAndStatusIs(userId, Status.REJECTED, SORT);
+                bookingDtoList = bookingRepository.findAllByItemOwnerIdAndStatusIs(userId,
+                        Status.REJECTED, pageable).getContent();
                 break;
         }
         return bookingDtoList.stream()
@@ -153,13 +166,14 @@ public class BookingServiceImpl implements BookingService {
                 .collect(Collectors.toList());
     }
 
-    private void bookingDateCheck(BookingCreatDto bookingCreatDto) {
-        if (bookingCreatDto.getStart().isAfter(bookingCreatDto.getEnd())) {
-            log.warn(LogMessages.BOOKING_START_DATE.toString(), bookingCreatDto.getStart());
+
+    private void bookingDateCheck(BookingCreatDto bookingCreationDto) {
+        if (bookingCreationDto.getStart().isAfter(bookingCreationDto.getEnd())) {
+            log.warn(LogMessages.BOOKING_START_DATE.toString(), bookingCreationDto.getStart());
             throw new BookingException(LogMessages.BOOKING_START_DATE.toString());
         }
-        if (bookingCreatDto.getStart().isEqual(bookingCreatDto.getEnd())) {
-            log.warn(LogMessages.BOOKING_START_DATE_EQUAL.toString(), bookingCreatDto.getStart());
+        if (bookingCreationDto.getStart().isEqual(bookingCreationDto.getEnd())) {
+            log.warn(LogMessages.BOOKING_START_DATE_EQUAL.toString(), bookingCreationDto.getStart());
             throw new BookingException(LogMessages.BOOKING_START_DATE_EQUAL.toString());
         }
     }
@@ -171,4 +185,5 @@ public class BookingServiceImpl implements BookingService {
             throw new BookingException("Unknown state: " + state);
         }
     }
+
 }

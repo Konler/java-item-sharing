@@ -1,5 +1,7 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -19,42 +21,36 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                 LogMessages.NOT_FOUND.toString() + bookingId));
     }
 
-    List<Booking> findAllByBookerId(Long bookerId, Sort sort);
+    Page<Booking> findAllByBookerId(Long bookerId, Pageable pageable);
 
     @Query("SELECT b FROM Booking AS b " +
             "WHERE b.item.owner.id = :ownerId " +
             "AND b.status = :status")
-    List<Booking> findAllByOwnerAndStatus(Long ownerId, Status status, Sort order);
+    List<Booking> findAllByOwnerAndStatus(Long ownerId, Status status, Sort sort);
 
     @Query("SELECT b FROM Booking AS b " +
-            "JOIN FETCH b.item AS i " +
-            "JOIN FETCH i.owner " +
-            "JOIN FETCH b.booker " +
             "WHERE b.booker.id = :bookerId " +
             "AND :now BETWEEN b.start AND b.end")
-    List<Booking> findByBookerIdAndNowBetweenStartAndEnd(Long bookerId, LocalDateTime now, Sort sort);
+    Page<Booking> findByBookerIdAndNowBetweenStartAndEnd(Long bookerId, LocalDateTime now, Pageable pageable);
 
-    List<Booking> findByBookerIdAndStartIsAfter(Long bookerId, LocalDateTime now, Sort sort);
+    Page<Booking> findByBookerIdAndStartIsAfter(Long bookerId, LocalDateTime now, Pageable pageable);
 
-    List<Booking> findByBookerIdAndEndIsBefore(Long bookerId, LocalDateTime now, Sort sort);
+    Page<Booking> findByBookerIdAndEndIsBefore(Long bookerId, LocalDateTime now, Pageable pageable);
 
-    List<Booking> findByBookerIdAndStatusIs(Long bookerId, Status status, Sort sort);
+    Page<Booking> findByBookerIdAndStatusIs(Long bookerId, Status status, Pageable pageable);
 
-    List<Booking> findAllByItemOwnerId(Long userId, Sort sort);
+    Page<Booking> findAllByItemOwnerId(Long userId, Pageable pageable);
 
-    @Query(value = "SELECT b FROM Booking AS b " +
-            "JOIN FETCH b.item AS i " +
-            "JOIN FETCH i.owner " +
-            "JOIN FETCH b.booker " +
+    @Query("SELECT b FROM Booking AS b " +
             "WHERE b.item.owner.id = :userId " +
             "AND :now BETWEEN b.start AND b.end")
-    List<Booking> findAllCurrentOwnerBookings(Long userId, LocalDateTime now, Sort sort);
+    Page<Booking> findAllCurrentOwnerBookings(Long userId, LocalDateTime now, Pageable pageable);
 
-    List<Booking> findAllByItemOwnerIdAndStartIsAfter(Long userId, LocalDateTime now, Sort sort);
+    Page<Booking> findAllByItemOwnerIdAndStartIsAfter(Long userId, LocalDateTime now, Pageable pageable);
 
-    List<Booking> findAllByItemOwnerIdAndEndIsBefore(Long userId, LocalDateTime now, Sort sort);
+    Page<Booking> findAllByItemOwnerIdAndEndIsBefore(Long userId, LocalDateTime now, Pageable pageable);
 
-    List<Booking> findAllByItemOwnerIdAndStatusIs(Long userId, Status status, Sort sort);
+    Page<Booking> findAllByItemOwnerIdAndStatusIs(Long userId, Status status, Pageable pageable);
 
     List<Booking> findAllByItemIdAndBookerIdAndStatusIsAndEndBefore(Long itemId, Long bookerId,
                                                                     Status bookingStatus, LocalDateTime now);
@@ -62,4 +58,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findFirstByItemIdAndStartBeforeAndStatus(Long itemId, LocalDateTime now, Status status, Sort sort);
 
     Optional<Booking> findFirstByItemIdAndStartAfterAndStatus(Long itemId, LocalDateTime now, Status status, Sort sort);
+
+    List<Booking> findByItemIdAndStatus(Long itemId, Status status);
 }

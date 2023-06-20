@@ -140,6 +140,14 @@
 					<version>0.8.8</version>
 					<configuration>
 						<output>file</output>
+							<excludes>
+								<exclude>**/BookingDto.class</exclude>
+								<exclude>**/BookingDtoLittle.class</exclude>
+								<exclude>**/Booking.class</exclude>
+								<exclude>**/CommentMapper.class</exclude>
+								<exclude>**/ItemDtoShort.class</exclude>
+								<exclude>**/KeyNotFoundException.class</exclude>
+							</excludes>
 					</configuration>
 					<executions>
 						<execution>

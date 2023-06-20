@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
@@ -26,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateUser(UserDto userDto, Long userId) {
-        User user = validateUser(userId);
+        User user = userRepository.validateUser(userId);
         String updatedName = userDto.getName();
         if (updatedName != null) {
             user.setName(updatedName);
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto getUserById(Long userId) {
-        User user = validateUser(userId);
+        User user = userRepository.validateUser(userId);
         return UserMapper.toUserDto(user);
     }
 
@@ -54,11 +55,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUserById(Long userId) {
-        validateUser(userId);
+        userRepository.validateUser(userId);
         userRepository.deleteById(userId);
     }
 
-     public User validateUser(Long userId) {
+    public User validateUser(Long userId) {
         return userRepository.findById(userId).orElseThrow(() -> new NotFoundException(
                 LogMessages.NOT_FOUND.toString() + userId));
     }

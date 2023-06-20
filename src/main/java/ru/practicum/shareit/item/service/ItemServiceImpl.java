@@ -2,8 +2,10 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.PageSetup;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoLittle;
@@ -22,12 +24,13 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.messages.LogMessages;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserServiceImpl;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +42,7 @@ import java.util.stream.Collectors;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final UserServiceImpl userService;
+    private final ItemRequestRepository itemRequestRepository;
     private final CommentRepository commentRepository;
     private final BookingRepository bookingRepository;
     public static final Sort SORT_BY_START_ASC = Sort.by("start").ascending();
@@ -46,10 +50,15 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto addItem(Long userId, ItemDto itemDto) {
-        Item newItem = ItemMapper.toItem(itemDto);
         User user = userService.validateUser(userId);
-        newItem.setOwner(user);
-        return ItemMapper.toItemDto(itemRepository.save(newItem));
+        Item item = ItemMapper.toItem(itemDto, user);
+        item.setOwner(user);
+        Long requestId = itemDto.getRequestId();
+        if (requestId != null) {
+            ItemRequest itemRequest = itemRequestRepository.validateItemRequest(requestId);
+            item.setRequest(itemRequest);
+        }
+        return ItemMapper.toItemDto(itemRepository.save(item));
     }
 
     @Override
@@ -91,9 +100,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsByUserId(Long userId) {
+    public List<ItemDto> getItemsByUserId(Long userId, Integer from, Integer size) {
         userService.validateUser(userId);
-        List<Item> items = itemRepository.findAllByOwnerId(userId);
+        PageRequest pageRequest = new PageSetup(from, size, Sort.unsorted());
+        List<Item> items = itemRepository.findAllByOwnerId(userId, pageRequest).getContent();
         if (items.isEmpty()) {
             log.warn(LogMessages.NOT_FOUND.toString());
             throw new NotFoundException(LogMessages.NOT_FOUND.toString());
@@ -119,13 +129,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItem(String text) {
+    public List<ItemDto> searchItem(String text, Integer from, Integer size) {
         if (text.isBlank()) {
             log.warn(LogMessages.BLANK_TEXT.toString());
             return Collections.emptyList();
         }
         String lowerText = text.toLowerCase();
-        Collection<Item> items = itemRepository.searchItemByText(lowerText);
+        PageRequest pageRequest = new PageSetup(from, size, Sort.unsorted());
+        List<Item> items = itemRepository.searchItemByText(lowerText,
+                pageRequest).getContent();
         return items.stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
