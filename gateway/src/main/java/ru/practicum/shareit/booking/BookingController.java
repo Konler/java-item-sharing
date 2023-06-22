@@ -59,10 +59,10 @@ public class BookingController {
 	}
 
 	@PatchMapping("/{bookingId}")
-	public ResponseEntity<Object> renewalBooking(@RequestHeader(value = "X-Sharer-User-Id") long userId,
+	public ResponseEntity<Object> updateBooking(@RequestHeader(value = "X-Sharer-User-Id") long userId,
 												 @PathVariable long bookingId,
 												 @RequestParam Boolean approved) {
 		log.info(LogMessages.RENEWAL_BOOKING.toString(), bookingId, userId);
-		return bookingClient.renewalBooking(userId, bookingId, approved);
+		return bookingClient.updateBooking(userId, bookingId, approved);
 	}
 }
