@@ -265,7 +265,7 @@ class ItemServiceImplTest {
         ItemDto expectedItemDto = ItemMapper.toItemDto(item);
         int from = 0;
         int size = 5;
-        Pageable page = new PageSetup(from, size, Sort.unsorted());
+        Pageable page = new PageSetup(from, size, Sort.by("id").ascending());
         Booking nextBooking = Booking.builder()
                 .id(2L)
                 .start(LocalDateTime.now().plusDays(3))
@@ -300,7 +300,7 @@ class ItemServiceImplTest {
         itemDto.setOwnerId(user2.getId());
         int from = 0;
         int size = 5;
-        Pageable page = new PageSetup(from, size, Sort.unsorted());
+        Pageable page = new PageSetup(from, size, Sort.by("id").ascending());
         when(userService.validateUser(anyLong())).thenReturn(user);
         when(itemRepository.findAllByOwnerId(anyLong(), any(Pageable.class))).thenReturn(new PageImpl<>(List.of()));
         assertThrows(NotFoundException.class, () -> itemService.getItemsByUserId(user.getId(), from, size));

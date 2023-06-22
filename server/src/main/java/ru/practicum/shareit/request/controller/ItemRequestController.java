@@ -8,9 +8,6 @@ import ru.practicum.shareit.messages.LogMessages;
 import ru.practicum.shareit.request.dto.AddItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -23,7 +20,7 @@ public class ItemRequestController {
     private static final String X_SHARER_USER_ID = "X-Sharer-User-Id";
 
     @PostMapping
-    public AddItemRequestDto addRequest(@Valid @RequestBody AddItemRequestDto addItemRequestDto,
+    public AddItemRequestDto addRequest(@RequestBody AddItemRequestDto addItemRequestDto,
                                         @RequestHeader(X_SHARER_USER_ID) Long requestorId) {
         log.info(LogMessages.ADD_ITEMREQUEST_REQUEST.toString());
         return itemRequestService.addRequest(addItemRequestDto, requestorId);
@@ -36,8 +33,8 @@ public class ItemRequestController {
 
     @GetMapping("all")
     public List<AddItemRequestDto> getOtherUsersRequests(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                                                         @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Integer from,
-                                                         @RequestParam(name = "size", defaultValue = "10") @Positive Integer size) {
+                                                         @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                         @RequestParam(name = "size", defaultValue = "10") Integer size) {
         return itemRequestService.getOtherUsersRequests(userId, from, size);
     }
 

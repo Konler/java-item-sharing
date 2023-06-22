@@ -19,8 +19,8 @@ class CommentDtoJsonTest {
 
     @Test
     void testCommentDto() throws IOException {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        LocalDateTime now = LocalDateTime.of(2023, 5, 8, 12, 30,0);
         CommentDto commentDto = CommentDto.builder()
                 .id(1L)
                 .itemId(1L)
@@ -31,7 +31,7 @@ class CommentDtoJsonTest {
         JsonContent<CommentDto> result = json.write(commentDto);
 
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).doesNotHaveJsonPath("$.itemId");
+        assertThat(result).extractingJsonPathNumberValue("$.itemId").isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.authorName").isEqualTo(commentDto.getAuthorName());
         assertThat(result).extractingJsonPathStringValue("$.text").isEqualTo(commentDto.getText());
         assertThat(result).extractingJsonPathStringValue("$.created").isEqualTo(now.format(formatter));

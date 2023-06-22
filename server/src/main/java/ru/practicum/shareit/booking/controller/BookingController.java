@@ -8,9 +8,6 @@ import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.messages.LogMessages;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -22,7 +19,7 @@ public class BookingController {
     private static final String X_SHARER_USER_ID = "X-Sharer-User-Id";
 
     @PostMapping
-    public BookingDto addBooking(@Valid @RequestBody BookingCreatDto bookingCreatDto,
+    public BookingDto addBooking(@RequestBody BookingCreatDto bookingCreatDto,
                                  @RequestHeader(X_SHARER_USER_ID) Long userId) {
         log.info(LogMessages.BOOKING_REQUEST.toString(), userId, bookingCreatDto);
         return bookingService.addBooking(bookingCreatDto, userId);
@@ -46,8 +43,8 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getAllUserBookings(@RequestHeader(X_SHARER_USER_ID) Long bookerId,
                                                @RequestParam(defaultValue = "ALL") String state,
-                                               @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Integer from,
-                                               @RequestParam(name = "size", defaultValue = "10") @Positive Integer size) {
+                                               @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                               @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info(LogMessages.GET_BOOKING_REQUEST_STATUS.toString(), bookerId, state);
         return bookingService.getAllUserBookings(bookerId, state, from, size);
     }
@@ -55,8 +52,8 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingDto> getOwnerAllItemBookings(@RequestHeader(X_SHARER_USER_ID) Long ownerId,
                                                     @RequestParam(defaultValue = "ALL") String state,
-                                                    @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Integer from,
-                                                    @RequestParam(name = "size", defaultValue = "10") @Positive Integer size) {
+                                                    @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                    @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info(LogMessages.GET_ALL_BOOKING_REQUEST_STATUS.toString(), ownerId, state);
         return bookingService.getOwnerAllItemBookings(ownerId, state, from, size);
     }

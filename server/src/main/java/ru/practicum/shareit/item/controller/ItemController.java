@@ -8,9 +8,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.messages.LogMessages;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @Slf4j
@@ -23,7 +20,7 @@ public class ItemController {
 
     @PostMapping
     public ItemDto addItem(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                           @Valid @RequestBody ItemDto itemDto) {
+                           @RequestBody ItemDto itemDto) {
         log.info(LogMessages.ADD_REQUEST.toString(), itemDto);
         return itemService.addItem(userId, itemDto);
     }
@@ -44,17 +41,17 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getItemsByUserId(@RequestHeader(X_SHARER_USER_ID) Long userId,
-                                          @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Integer from,
-                                          @RequestParam(name = "size", defaultValue = "10") @Positive Integer size) {
+    public List<ItemDto> getPersonalItems(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                          @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                          @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info(LogMessages.GET_ALL_REQUEST.toString());
         return itemService.getItemsByUserId(userId, from, size);
     }
 
     @GetMapping("/search")
     public List<ItemDto> searchItem(@RequestParam String text,
-                                    @RequestParam(name = "from", defaultValue = "0") @PositiveOrZero Integer from,
-                                    @RequestParam(name = "size", defaultValue = "10") @Positive Integer size) {
+                                    @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                    @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info(LogMessages.SEARCH_REQUEST.toString());
         return itemService.searchItem(text, from, size);
     }
@@ -62,7 +59,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(@RequestHeader(value = X_SHARER_USER_ID) Long userId,
                                  @PathVariable Long itemId,
-                                 @Valid @RequestBody CommentDto commentDto) {
+                                 @RequestBody CommentDto commentDto) {
         log.info(LogMessages.COMMENT_REQUEST.toString(), itemId, userId);
         return itemService.addComment(userId, itemId, commentDto);
     }

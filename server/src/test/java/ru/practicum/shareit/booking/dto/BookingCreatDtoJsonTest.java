@@ -21,20 +21,18 @@ class BookingCreatDtoJsonTest {
 
     @Test
     void testBookingCreationDto() throws IOException {
-        LocalDateTime now = LocalDateTime.now();
-        BookingCreatDto bookingCreationDto = BookingCreatDto.builder()
-                .id(1L)
-                .status(Status.WAITING)
-                .start(now.plusDays(2))
-                .end(now.plusDays(3))
-                .itemId(1L)
+        LocalDateTime now = LocalDateTime.of(2023, 5, 8, 12, 30, 0);
+        ;
+        BookingCreatDto bookingCreationDto = BookingCreatDto.builder().id(1L)
+                .status(Status.WAITING).start(now.plusDays(2))
+                .end(now.plusDays(3)).itemId(1L)
                 .build();
         JsonContent<BookingCreatDto> result = json.write(bookingCreationDto);
-
         assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.status").isEqualTo("WAITING");
-        assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo((now.plusDays(2)).format(formatter));
-        assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo((now.plusDays(3)).format(formatter));
+        assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo(now.plusDays(2).format(formatter));
+        assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo(now.plusDays(3).format(formatter));
         assertThat(result).extractingJsonPathNumberValue("$.itemId").isEqualTo(1);
     }
 }
+
